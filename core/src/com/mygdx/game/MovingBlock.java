@@ -17,23 +17,29 @@ public class MovingBlock extends Obstacle {
 		this.y1 = (float) y1;
 		this.x2 = (float) x2;
 		this.y2 = (float) y2;		
-	
-		setX(this.x1);
-		setY(this.y1);
 		
 		Texture texture = new Texture("map-tile.jpg");
-		setSprite(new Sprite(texture));
+		
+		Sprite s = new Sprite(texture);
+		s.setX(this.x1);
+		s.setY(this.y1);
+		s.setSize(1, 1);
+		s.setOrigin(0, 0);
+		
+		setSprite(s);
+		
+		
 		
 	}
 	
 
 	@Override
-	public void update() {		
+	public void update() {
 		
 		t += state? 1 : -1;
 		
-		setX(x1 + ((x2 - x1) * t / 100));
-		setY(y1 + ((y2 - y1) * t / 100));		
+		getSprites()[0].setX(x1 + ((x2 - x1) * t / 100));
+		getSprites()[0].setY(y1 + ((y2 - y1) * t / 100));
 		
 		if(t == 100 || t == 0){
 			state = !state;

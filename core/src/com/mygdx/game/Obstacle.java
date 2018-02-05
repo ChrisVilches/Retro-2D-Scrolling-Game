@@ -5,42 +5,49 @@ import com.badlogic.gdx.utils.Disposable;
 
 public abstract class Obstacle implements IUpdatable, Disposable, ICollisionable {
 
-	private float x, y, width, height, angle;
+	//private float x, y, width, height, angle;
 	private Sprite[] sprites;
 		
 	protected Sprite[] getSprites(){ return sprites; }
-	protected float getX(){ return x; }
+	/*protected float getX(){ return x; }
 	protected float getY(){ return y; }
 	protected float getWidth(){ return width; }
 	protected float getHeight(){ return height; }
-	protected float getAngle(){ return angle; }
+	protected float getAngle(){ return angle; }*/
 	
-	protected void setX(float x){ this.x = x; }
+	/*protected void setX(float x){ this.x = x; }
 	protected void setY(float y){ this.y = y; }
 	protected void setWidth(float w) { this.width = w; }
 	protected void setHeight(float h) { this.height = h; }
-	protected void setAngle(float angle) { this.angle = angle; }
+	protected void setAngle(float angle) { this.angle = angle; }*/
 	protected void setSprites(Sprite[] s) { this.sprites = s; }
 	protected void setSprite(Sprite s) { this.sprites = new Sprite[]{ s }; }
 	
 	protected Obstacle(){
-		width = 1;
+		/*width = 1;
 		height = 1;
-		angle = 0;
+		angle = 0;*/
 	}
 		
 	
 	@Override
 	public boolean touches(float leftUpperX, float leftUpperY, float width, float height) {
-		return Util.rectangleCollision(
-				leftUpperX, 
-				leftUpperY, 
-				width, 
-				height, 
-				this.x, 
-				this.y - (this.height - 1), 
-				this.width, 
-				this.height);
+		
+		for(int i=0; i<sprites.length; i++){
+			
+			boolean collision = Util.rectangleCollision(
+					leftUpperX, 
+					leftUpperY, 
+					width, 
+					height, 
+					sprites[i].getX(), 
+					sprites[i].getY() - (sprites[i].getHeight() - 1), 
+					sprites[i].getWidth(), 
+					sprites[i].getHeight());			
+			if(collision) return true;
+		}
+		
+		return false;
 	}
 
 	@Override

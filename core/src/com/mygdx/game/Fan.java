@@ -14,46 +14,51 @@ public class Fan extends Obstacle {
 	private float propellerWidth;
 	private float propellerLength;
 	
-	public Fan(int centerX, int centerY, float size, float speed){
+	public Fan(int tileX, int tileY, float size, float speed){
 		
 		this.speed = speed;
 		
-		setX((float) centerX);
-		setY((float) centerY);		
-		
 		Texture texture = new Texture("x.png");
+		Sprite s = new Sprite(texture);		
 
-		setSprite(new Sprite(texture));
-
+		s.setX((float) tileX);
+		s.setY((float) tileY);	
 		
-		setWidth(size);
-		setHeight(size);
+		s.setSize(size, size);
 		
 		propellerLength = size / 2;
 		propellerWidth = size * 0.038f;		
 		
-		setAngle(90f);
+		s.setRotation(90f);
 		
 		propellers = new Polygon[4];
 		
 		for(int i=0; i<4; i++){
 			propellers[i] = new Polygon();
-			propellers[i].setOrigin(getX() + 0.5f, getY() + 0.5f);
+			propellers[i].setOrigin(s.getX() + 0.5f, s.getY() + 0.5f);
 		}
 		
 		float[] vertices = new float[] { 
-				getX() + 0.5f - propellerWidth, getY() + 0.5f, 
-				getX() + 0.5f - propellerWidth, getY() + 0.5f + propellerLength, 
-				getX() + 0.5f + propellerWidth, getY() + 0.5f + propellerLength, 
-				getX() + 0.5f + propellerWidth, getY() + 0.5f };
+				s.getX() + 0.5f - propellerWidth, s.getY() + 0.5f, 
+				s.getX() + 0.5f - propellerWidth, s.getY() + 0.5f + propellerLength, 
+				s.getX() + 0.5f + propellerWidth, s.getY() + 0.5f + propellerLength, 
+				s.getX() + 0.5f + propellerWidth, s.getY() + 0.5f };
 		
 		propellers[0].setVertices(vertices);
 		propellers[1].setVertices(vertices);
 		propellers[2].setVertices(vertices);
 		propellers[3].setVertices(vertices);		
 			
-		setX(getX() - ((getWidth() - 1)/2));
-		setY(getY() + ((getHeight() - 1)/2));		
+		//s.setX(s.getX() - ((s.getWidth() - 1)/2));
+		//s.setY(s.getY() + ((s.getHeight() - 1)/2));	
+		
+		s.setX(s.getX() + 0.5f);
+		s.setY(s.getY() - 0.5f);
+		
+		s.setOrigin(s.getWidth()/2, s.getHeight()/2);
+		
+		
+		setSprite(s);
 	
 	}
 	
@@ -87,13 +92,16 @@ public class Fan extends Obstacle {
 	
 
 	@Override
-	public void update() {		
-		setAngle(getAngle() - speed);		
-		if(getAngle() <= 0) setAngle(90f);
-		propellers[0].setRotation(-getAngle());
-		propellers[1].setRotation(-getAngle() + 90);
-		propellers[2].setRotation(-getAngle() + 180);
-		propellers[3].setRotation(-getAngle() + 270);
+	public void update() {
+		
+		Sprite s = getSprites()[0];
+		
+		s.setRotation(s.getRotation() - speed);		
+		if(s.getRotation() <= 0) s.setRotation(90f);
+		propellers[0].setRotation(-s.getRotation());
+		propellers[1].setRotation(-s.getRotation() + 90);
+		propellers[2].setRotation(-s.getRotation() + 180);
+		propellers[3].setRotation(-s.getRotation() + 270);
 
 	}
 

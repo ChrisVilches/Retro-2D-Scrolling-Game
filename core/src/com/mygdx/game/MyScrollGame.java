@@ -76,7 +76,7 @@ public class MyScrollGame extends ApplicationAdapter {
 		
 		weathers.add(new Snow(60, 700, 530, 5));
 		
-		obstacles.add(new MovingBlock(5, 3, 13, 3));
+		obstacles.add(new MovingBlock(5, 3, 6, 3));
 		obstacles.add(new MovingBlock(20, 18, 25, 18));
 		
 		obstacles.add(new MovingBlock(30, 27, 30, 28));
@@ -84,13 +84,17 @@ public class MyScrollGame extends ApplicationAdapter {
 		
 		obstacles.add(new MovingBlock(4, 4, 4, 5));
 		
-		obstacles.add(new Fan(6, 5, 4, 0.4f));
+		/*obstacles.add(new Fan(6, 5, 6, 0.4f));
 		obstacles.add(new Fan(9, 6, 2, -1.2f));
-		obstacles.add(new Fan(11, 5, 3, 0.7f));
+		obstacles.add(new Fan(20, 19, 3, 0.7f));*/
+		
+		obstacles.add(new Fan2(6, 5, 2, 1f, 0.4f));
+		obstacles.add(new Fan2(9, 6, 2, 0.6f, -1.2f));
+		obstacles.add(new Fan2(20, 19, 3, 0.1f, 0.7f));
 
 		explosion = new Explosion();
 		
-		transition = new CircleTransition();
+		transition = new BarsTransition();
 		
 		initialize();
 		state = State.STOPPED;
@@ -115,7 +119,7 @@ public class MyScrollGame extends ApplicationAdapter {
 			if(Gdx.input.justTouched()){				
 				if(Util.pointInsideRectangle(ship.x - (shipWidth/2), Gdx.graphics.getHeight() - ship.y - (shipHeight/2), shipWidth, shipHeight, mx, my)){
 					state = State.PLAYING;
-					level.moving = true;
+					//level.moving = true;
 					ship.moving = true;
 				}				
 			}			
@@ -227,16 +231,29 @@ public class MyScrollGame extends ApplicationAdapter {
 				
 				Sprite s = sprites[j];
 				
-				s.setSize(o.getWidth() * tileSize, o.getHeight() * tileSize);
-				s.setRotation(o.getAngle());
-				s.setOrigin(s.getWidth()/2, s.getHeight()/2);			
+				//s.setSize(o.getWidth() * tileSize, o.getHeight() * tileSize);
+				//s.setRotation(o.getAngle());
 				
+				float x = s.getX();
+				float y = s.getY();
+				
+				//float ox = s.getOriginX();
+				//float oy = s.getOriginY();
+				
+				//s.setOrigin(0, 0);			
+				
+				s.setScale(tileSize);
 				s.setPosition(
-						(o.getX() + level.shiftX) * tileSize, 
-						Gdx.graphics.getHeight() - (o.getY() + level.shiftY + 1) * tileSize
+						(s.getX() + level.shiftX) * tileSize, 
+						Gdx.graphics.getHeight() - (s.getY() + level.shiftY + 1) * tileSize
 						);
 				
 				s.draw(batch);
+				
+				
+				s.setPosition(x, y);
+				//s.setOrigin(ox, oy);	
+				
 			}
 		}
 	}
@@ -328,6 +345,18 @@ public class MyScrollGame extends ApplicationAdapter {
 	    		fan = (Fan)o;
 	    		for(int i=0; i<4; i++){	    	    	
 	    	    	float[] v = fan.getPropellers()[i].getTransformedVertices();	    	    	
+	    	    	shapes.line(v[0] * t, Gdx.graphics.getHeight() - v[1] * t, v[2] * t, Gdx.graphics.getHeight() - v[3] * t);
+	    	    	shapes.line(v[2] * t, Gdx.graphics.getHeight() - v[3] * t, v[4] * t, Gdx.graphics.getHeight() - v[5] * t);
+	    	    	shapes.line(v[4] * t, Gdx.graphics.getHeight() - v[5] * t, v[6] * t, Gdx.graphics.getHeight() - v[7] * t);
+	    	    	shapes.line(v[6] * t, Gdx.graphics.getHeight() - v[7] * t, v[0] * t, Gdx.graphics.getHeight() - v[1] * t);
+	    	    }
+	    	}
+	    	
+	    	if(o instanceof Fan2){
+	    		
+	    		Fan2 fan2 = (Fan2)o;
+	    		for(int i=0; i<4; i++){	    	    	
+	    	    	float[] v = fan2.getPropellers()[i].getTransformedVertices();	    	    	
 	    	    	shapes.line(v[0] * t, Gdx.graphics.getHeight() - v[1] * t, v[2] * t, Gdx.graphics.getHeight() - v[3] * t);
 	    	    	shapes.line(v[2] * t, Gdx.graphics.getHeight() - v[3] * t, v[4] * t, Gdx.graphics.getHeight() - v[5] * t);
 	    	    	shapes.line(v[4] * t, Gdx.graphics.getHeight() - v[5] * t, v[6] * t, Gdx.graphics.getHeight() - v[7] * t);

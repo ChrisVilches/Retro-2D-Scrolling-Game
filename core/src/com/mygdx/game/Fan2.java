@@ -1,65 +1,71 @@
 package com.mygdx.game;
 
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Polygon;
 
-public class Fan2 extends Obstacle {
-	
+public class Fan2 extends Obstacle {	
 	
 	private float speed;
 	
-	Polygon[] propeller;
+	Polygon[] propellers;
 	
-	private float propellerWidth = 0.1f;
-	private float propellerLength = 100;
 	
 	public Fan2(int centerX, int centerY, float propellerLength, float propellerWidth, float speed){
 		
 		this.speed = speed;
 		
-		setX((float) centerX);
-		setY((float) centerY);		
+		this.speed = 2;
+
 		
-		Texture texture = new Texture("x.png");
+		Texture texture = new Texture("dot-blue.png");
 		
-		setSprite(new Sprite(texture));
-	
-		
-		setWidth(size);
-		setHeight(size);
-		
-		propellerLength = size/1.6f;
-		propellerWidth = size * 0.038f;
-		
-		
-		setAngle(90f);
-		
-		propeller = new Polygon[4];
+		Sprite[] sprites = new Sprite[]{
+				new Sprite(texture),
+				new Sprite(texture),
+				new Sprite(texture),
+				new Sprite(texture)
+		};
 		
 		for(int i=0; i<4; i++){
-			propeller[i] = new Polygon();	
+			sprites[i].setPosition(centerX+0.5f, centerY-0.5f);
+			sprites[i].setOrigin(propellerWidth/2, propellerLength);
+			sprites[i].rotate(90 * i);
+			sprites[i].setSize(propellerWidth, propellerLength);
+			sprites[i].setAlpha(0.4f);
+		}
+
+		
+		setSprites(new Sprite[]{ sprites[0], sprites[1], sprites[2], sprites[3] });
+		
+		
+		propellers = new Polygon[4];
+		for(int i=0; i<4; i++){
+			propellers[i] = new Polygon();
 			
-			propeller[i].setOrigin(getX() + 0.5f, getY() + 0.5f);
+			//propellers[i].setOrigin(getSprites()[i].getOriginX(), getSprites()[i].getOriginY());
+			propellers[i].setOrigin(getSprites()[i].getX(), getSprites()[i].getY()+1);
 		}
 		
+		System.out.printf("%f %f\n", propellers[0].getOriginX(), propellers[0].getOriginY());
+		
+
 		float[] vertices = new float[] { 
-				getX() + 0.5f - propellerWidth, getY() + 0.5f, 
-				getX() + 0.5f - propellerWidth, getY() + 0.5f + propellerLength, 
-				getX() + 0.5f + propellerWidth, getY() + 0.5f + propellerLength, 
-				getX() + 0.5f + propellerWidth, getY() + 0.5f };
-		
-		propeller[0].setVertices(vertices);
-		propeller[1].setVertices(vertices);
-		propeller[2].setVertices(vertices);
-		propeller[3].setVertices(vertices);
+				getSprites()[0].getX()  - propellerWidth/2, getSprites()[0].getY(), 
+				getSprites()[0].getX()  - propellerWidth/2, getSprites()[0].getY() + propellerLength, 
+				getSprites()[0].getX()  + propellerWidth/2, getSprites()[0].getY() + propellerLength, 
+				getSprites()[0].getX()  + propellerWidth/2, getSprites()[0].getY()};
+
+		for(int i=1; i<vertices.length; i+=2)
+			vertices[i] += 1;
 		
 		
-		setX(getX() - (getWidth() - 1)/2);
-		setY(getY() - (getHeight() - 1)/2);
+		propellers[0].setVertices(vertices);
+		propellers[1].setVertices(vertices);
+		propellers[2].setVertices(vertices);
+		propellers[3].setVertices(vertices);
+		
 		
 	}
 	
@@ -67,12 +73,16 @@ public class Fan2 extends Obstacle {
 	public boolean touches(float leftUpperX, float leftUpperY, float width, float height) {
 		
 		for(int i=0; i<4; i++){
-			if(rectangleIntersectionRotated(propeller[i], leftUpperX, leftUpperY, width, height)){ 
+			if(rectangleIntersectionRotated(propellers[i], leftUpperX, leftUpperY, width, height)){ 
 				return true; 
 			}
 		}
 		
 		return false;
+	}
+	
+	public Polygon[] getPropellers(){
+		return propellers;
 	}
 	
 	private boolean rectangleIntersectionRotated(Polygon p, float leftUpperX, float leftUpperY, float width, float height) {
@@ -90,13 +100,22 @@ public class Fan2 extends Obstacle {
 	
 	@Override
 	public void update() {		
-		setAngle(getAngle() - speed);		
-		if(getAngle() <= 0) setAngle(90f);
-		propeller[0].setRotation(-getAngle() + 45);
-		propeller[1].setRotation(-getAngle() + 90 + 45);
-		propeller[2].setRotation(-getAngle() + 180 + 45);
-		propeller[3].setRotation(-getAngle() + 270 + 45);
-	
+		
+		Sprite s;
+		
+		for(int i=0; i<4; i++){
+			s = getSprites()[i];
+			s.setRotation(s.getRotation() - speed);
+			if(s.getRotation() <= -360) s.setRotation(360f);			
+		}
+		
+		s = getSprites()[0];
+		
+		propellers[0].setRotation(-s.getRotation());
+		propellers[1].setRotation(-s.getRotation() + 90);
+		propellers[2].setRotation(-s.getRotation() + 180);
+		propellers[3].setRotation(-s.getRotation() + 270);				
+
 	}
 	
 
