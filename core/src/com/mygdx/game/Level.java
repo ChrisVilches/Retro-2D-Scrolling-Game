@@ -37,7 +37,7 @@ public class Level implements IUpdatable, ICollisionable {
 	int startX;
 	int startY;
 	
-	boolean moving = false;
+	boolean moving;
 	
 	int mapRows, mapCols;
 	
@@ -145,8 +145,16 @@ public class Level implements IUpdatable, ICollisionable {
 		setDimensions(lines);
 		setDirections(lines);
 		setWallMatrix(lines);
+		initialize();
 
-
+	}
+	
+	public void initialize(){
+		moving = false;
+		shiftX = 0;
+		shiftY = 0;
+		currentDirection = 0;
+		currentDirectionShift = 0;	
 	}
 
 	@Override

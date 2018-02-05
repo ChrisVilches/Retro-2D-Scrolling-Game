@@ -17,7 +17,15 @@ public class Obstacle implements IUpdatable, Disposable, ICollisionable {
 	
 	@Override
 	public boolean touches(float leftUpperX, float leftUpperY, float width, float height) {
-		return false;
+		return Util.rectangleCollision(
+				leftUpperX, 
+				leftUpperY, 
+				width, 
+				height, 
+				this.x, 
+				this.y - (this.height - 1), 
+				this.width, 
+				this.height);
 	}
 
 	@Override

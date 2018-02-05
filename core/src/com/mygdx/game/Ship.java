@@ -6,17 +6,23 @@ public class Ship extends Weather {
 	
 	float x, y;
 	
+	private float absX, absY;
+	
 	boolean moving = false;
 	
-	float collisionPorcentageWidth = 1f;
-	float collisionPorcentageHeight = 1f;
+	float collisionPorcentageWidth = 0.8f;
+	float collisionPorcentageHeight = 0.8f;
 	
-	public Ship(float absoluteX, float absoluteY){
-		
-		this.x = absoluteX;
-		this.y = absoluteY;
-		
+	public Ship(float absoluteX, float absoluteY){		
+		absX = absoluteX;
+		absY = absoluteY;		
 	}
+	
+	public void initialize(){
+		this.x = absX;
+		this.y = absY;
+	}	
+	
 	
 	public void update(){
 		

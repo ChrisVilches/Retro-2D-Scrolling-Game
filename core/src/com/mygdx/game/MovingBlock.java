@@ -20,32 +20,17 @@ public class MovingBlock extends Obstacle {
 		x = this.x1;
 		y = this.y1;
 		
-		texture = new Texture("map-tile.jpg");
-		
+		texture = new Texture("map-tile.jpg");		
 	}
 	
-	@Override
-	public boolean touches(float leftUpperX, float leftUpperY, float width, float height) {
-		
-		return Util.rectangleCollision(
-				leftUpperX, 
-				leftUpperY, 
-				width, 
-				height, 
-				this.x, 
-				this.y, 
-				this.width, 
-				this.height);
-	}
-
 
 	@Override
 	public void update() {		
 		
 		t += state? 1 : -1;
 		
-		//x = x1 + ((x2 - x1) * t / 100);
-		//y = y1 + ((y2 - y1) * t / 100);		
+		x = x1 + ((x2 - x1) * t / 100);
+		y = y1 + ((y2 - y1) * t / 100);		
 		
 		if(t == 100 || t == 0){
 			state = !state;
