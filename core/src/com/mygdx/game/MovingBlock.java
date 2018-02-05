@@ -1,6 +1,7 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 
 public class MovingBlock extends Obstacle {
 	
@@ -15,12 +16,14 @@ public class MovingBlock extends Obstacle {
 		this.x1 = (float) x1;
 		this.y1 = (float) y1;
 		this.x2 = (float) x2;
-		this.y2 = (float) y2;
+		this.y2 = (float) y2;		
+	
+		setX(this.x1);
+		setY(this.y1);
 		
-		x = this.x1;
-		y = this.y1;
+		Texture texture = new Texture("map-tile.jpg");
+		setSprite(new Sprite(texture));
 		
-		texture = new Texture("map-tile.jpg");		
 	}
 	
 
@@ -29,8 +32,8 @@ public class MovingBlock extends Obstacle {
 		
 		t += state? 1 : -1;
 		
-		x = x1 + ((x2 - x1) * t / 100);
-		y = y1 + ((y2 - y1) * t / 100);		
+		setX(x1 + ((x2 - x1) * t / 100));
+		setY(y1 + ((y2 - y1) * t / 100));		
 		
 		if(t == 100 || t == 0){
 			state = !state;

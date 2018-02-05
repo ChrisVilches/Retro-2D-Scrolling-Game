@@ -2,7 +2,7 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
 
-public class Ship extends Weather {
+public class Ship implements IUpdatable {
 	
 	float x, y;
 	

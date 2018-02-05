@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
@@ -19,8 +20,7 @@ public class MyScrollGame extends ApplicationAdapter {
 		DYING,
 		FADEOUT,
 		FADEIN
-	};
-	
+	};	
 	
 	SpriteBatch batch;
 	Texture shipTexture;
@@ -28,15 +28,11 @@ public class MyScrollGame extends ApplicationAdapter {
 	Cursor cursor;
 	Ship ship;
 	State state;
-	Texture jiggy, jiggyWhite;
 	ShapeRenderer shapes;
+		
 	
-	float fadeRadius = 0;
-	
-	final float MAX_RADIUS = 480;
-	
-	float shipWidth = 60;
-	float shipHeight = 40;
+	float shipWidth = 30;//60;
+	float shipHeight = 20;//40;
 	
 	float cursorSize = 20;
 	
@@ -53,6 +49,8 @@ public class MyScrollGame extends ApplicationAdapter {
 	ArrayList<Obstacle> obstacles;
 	
 	Explosion explosion;
+	
+	Transition transition;
 
 
 	@Override
@@ -62,8 +60,6 @@ public class MyScrollGame extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		shipTexture = new Texture("ship.png");		
 		tile = new Texture("map-tile.jpg");
-		jiggy = new Texture("puzzle_piece.png");
-		jiggyWhite = new Texture("puzzle_piece2.png");
 		cursor = Gdx.graphics.newCursor(new Pixmap(Gdx.files.internal("cursor.png")), 3, 3);
 		Gdx.graphics.setCursor(cursor);
 
@@ -86,7 +82,15 @@ public class MyScrollGame extends ApplicationAdapter {
 		obstacles.add(new MovingBlock(30, 27, 30, 28));
 		obstacles.add(new MovingBlock(33, 28, 33, 27));
 		
+		obstacles.add(new MovingBlock(4, 4, 4, 5));
+		
+		obstacles.add(new Fan(6, 5, 4, 0.4f));
+		obstacles.add(new Fan(9, 6, 2, -1.2f));
+		obstacles.add(new Fan(11, 5, 3, 0.7f));
+
 		explosion = new Explosion();
+		
+		transition = new CircleTransition();
 		
 		initialize();
 		state = State.STOPPED;
@@ -96,18 +100,24 @@ public class MyScrollGame extends ApplicationAdapter {
 	public void initialize(){
 		ship.initialize();
 		level.initialize();
-		explosion.initialize();
+		explosion.initialize();		
 	}
 	
 	
 	private void update() {
 		
 		switch(state){
-		case STOPPED:			
-			if(Gdx.input.isTouched()){
-				state = State.PLAYING;
-				level.moving = true;
-				ship.moving = true;
+		case STOPPED:
+			
+			float mx = Gdx.input.getX();
+			float my = Gdx.input.getY();
+						
+			if(Gdx.input.justTouched()){				
+				if(Util.pointInsideRectangle(ship.x - (shipWidth/2), Gdx.graphics.getHeight() - ship.y - (shipHeight/2), shipWidth, shipHeight, mx, my)){
+					state = State.PLAYING;
+					level.moving = true;
+					ship.moving = true;
+				}				
 			}			
 			break;	
 			
@@ -130,16 +140,15 @@ public class MyScrollGame extends ApplicationAdapter {
 			explosion.incrementElapsed(Gdx.graphics.getDeltaTime());
 			
 			if(explosion.animation.isAnimationFinished(explosion.elapsed)){
-				fadeRadius = MAX_RADIUS;
+				transition.initialize();
 				state = State.FADEOUT;
 			}
 			
 			break;
 			
 		case FADEOUT:
-			fadeRadius -= 10;
 			
-			if(fadeRadius <= 0){
+			if(transition.fadeOut()){
 				initialize();
 				state = State.FADEIN;
 			}
@@ -147,16 +156,14 @@ public class MyScrollGame extends ApplicationAdapter {
 			
 		case FADEIN:
 			
-			fadeRadius += 10;
-			if(fadeRadius >= MAX_RADIUS){
-				fadeRadius = MAX_RADIUS;
+			if(transition.fadeIn()){
+				transition.initialize();
 				initialize();
 				state = State.STOPPED;
-			}
-			
+			}			
 			break;
 			
-		}		
+		}
 		
 	
 		for(int i=0; i<obstacles.size(); i++){
@@ -196,13 +203,46 @@ public class MyScrollGame extends ApplicationAdapter {
 		return level.touches(x, y, width, height);
 	}
 	
+	
+	private void renderTiles(){
+		int fromY = -(int) level.shiftY;		
+		int fromX = -(int) level.shiftX;		
+	
+		for(int i=fromY; i<fromY+15 && i<level.mapRows; i++){
+			for(int j=fromX; j<fromX+15 && j<level.mapCols; j++){
+				if(level.walls[i][j] == 0) continue;
+				batch.draw(tile, (j + level.shiftX) * tileSize, Gdx.graphics.getHeight()-(i + level.shiftY + 1) * tileSize, tileSize, tileSize);
+			}
+		}
+	}
+	
+	
+	private void renderObstacles(){
+		for(int i=0; i<obstacles.size(); i++){
+			Obstacle o = obstacles.get(i);
+			
+			Sprite[] sprites = o.getSprites();
+			
+			for(int j=0; j<sprites.length; j++){
+				
+				Sprite s = sprites[j];
+				
+				s.setSize(o.getWidth() * tileSize, o.getHeight() * tileSize);
+				s.setRotation(o.getAngle());
+				s.setOrigin(s.getWidth()/2, s.getHeight()/2);			
+				
+				s.setPosition(
+						(o.getX() + level.shiftX) * tileSize, 
+						Gdx.graphics.getHeight() - (o.getY() + level.shiftY + 1) * tileSize
+						);
+				
+				s.draw(batch);
+			}
+		}
+	}
 
 	
-	@Override
-	public void render () {
-		
-		update();
-		
+	private void renderFadeMasking(){
 		switch(state){
 		case FADEIN:
 		case FADEOUT:
@@ -216,7 +256,7 @@ public class MyScrollGame extends ApplicationAdapter {
 		    
 		    shapes.begin(ShapeRenderer.ShapeType.Filled);
 		    shapes.setColor(1f, 1f, 1f, 0.5f);
-		    shapes.circle(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2, fadeRadius);
+		    transition.render(shapes);
 		    shapes.end();
 
 		    Gdx.gl.glColorMask(true, true, true, true);
@@ -227,27 +267,24 @@ public class MyScrollGame extends ApplicationAdapter {
 		default:
 			break;
 		}	
+	}
+
+	
+	@Override
+	public void render () {
+		
+		update();
+		
+		renderFadeMasking();
 		
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 	    
 	    batch.begin();  
 	    
 	    
-	    int fromY = -(int) level.shiftY;		
-		int fromX = -(int) level.shiftX;		
-	
-		for(int i=fromY; i<fromY+15 && i<level.mapRows; i++){
-			for(int j=fromX; j<fromX+15 && j<level.mapCols; j++){
-				if(level.walls[i][j] == 0) continue;
-				batch.draw(tile, (j + level.shiftX) * tileSize, Gdx.graphics.getHeight()-(i + level.shiftY + 1) * tileSize, tileSize, tileSize);
-			}
-		}
-		
-		for(int i=0; i<obstacles.size(); i++){
-			Obstacle o = obstacles.get(i);
-			batch.draw(o.getTexture(), (o.getX() + level.shiftX) * tileSize, Gdx.graphics.getHeight()-(o.getY() + level.shiftY + 1) * tileSize, tileSize * o.getWidth(), tileSize * o.getHeight());
-		}
-		
+	    renderTiles();
+
+		renderObstacles();
 		
 		switch(state){
 		
@@ -267,12 +304,41 @@ public class MyScrollGame extends ApplicationAdapter {
 		
 		for(int i=0; i<weathers.size(); i++){
 			weathers.get(i).render(batch);
+			weathers.get(i).render(shapes);
 		}
 	    
 
 	    batch.end();
-	    Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);	
-
+	    Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	    /****************** DEBUG ****************************/
+	    
+	    shapes.begin(ShapeRenderer.ShapeType.Line);
+	    shapes.setColor(1f, 0f, 0f, 1f);
+	    float t = tileSize;
+	    Fan fan = null;
+	    for(Obstacle o : obstacles){
+	    	if(o instanceof Fan){
+	    		fan = (Fan)o;
+	    		for(int i=0; i<4; i++){	    	    	
+	    	    	float[] v = fan.getPropellers()[i].getTransformedVertices();	    	    	
+	    	    	shapes.line(v[0] * t, Gdx.graphics.getHeight() - v[1] * t, v[2] * t, Gdx.graphics.getHeight() - v[3] * t);
+	    	    	shapes.line(v[2] * t, Gdx.graphics.getHeight() - v[3] * t, v[4] * t, Gdx.graphics.getHeight() - v[5] * t);
+	    	    	shapes.line(v[4] * t, Gdx.graphics.getHeight() - v[5] * t, v[6] * t, Gdx.graphics.getHeight() - v[7] * t);
+	    	    	shapes.line(v[6] * t, Gdx.graphics.getHeight() - v[7] * t, v[0] * t, Gdx.graphics.getHeight() - v[1] * t);
+	    	    }
+	    	}
+	    }	    
+	    
+	    
+	    shapes.end();
+	    
 	}
 	
 	@Override

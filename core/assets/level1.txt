@@ -2,11 +2,11 @@ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 x...........................xxxxxxxxxxxxxxxxxxxxxxxxxxx
 x..o..............................xxxxxxxxxxxxxxxxxxxxx
-x......x............................xxxxxxxxxxxxxxxxxxx
-xxx.x.xxxxxxxxxxxxxxxxxxxxxxxxxxx...xxxxxxxxxxxxxxxxxxx
-xx......xxxxxxxxxxxxxxxxxxxxxxxxx...xxxxxxxxxxxxxxxxxxx
-xx.....xxxxxxxxxxxxxxxxxxxxxxxxxx...xxxxxxxxxxxxxxxxxxx
-xxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxx...xxxxxxxxxxxxxxxxxxx
+x...................................xxxxxxxxxxxxxxxxxxx
+x.....x............x...xxxxxxxxxx...xxxxxxxxxxxxxxxxxxx
+xx.....................xxxxxxxxxx...xxxxxxxxxxxxxxxxxxx
+xx...............xxxxxxxxxxxxxxxx...xxxxxxxxxxxxxxxxxxx
+xxx...............xxxxxxxxx.xxxxx...xxxxxxxxxxxxxxxxxxx
 xxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxx...xxxxxxxxxxxxxxxxxxx
 xxxxxxxxxxxxxxxxxxxxxxxxxxx...xxx...xxxxxxxxxxxxxxxxxxx
 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx...xxxxxxxxxxxxxxxxxxx

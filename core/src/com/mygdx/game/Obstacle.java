@@ -1,18 +1,33 @@
 package com.mygdx.game;
 
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.utils.Disposable;
 
-public class Obstacle implements IUpdatable, Disposable, ICollisionable {
+public abstract class Obstacle implements IUpdatable, Disposable, ICollisionable {
 
-	protected float x, y, width = 1, height = 1;
-	protected Texture texture;
+	private float x, y, width, height, angle;
+	private Sprite[] sprites;
+		
+	protected Sprite[] getSprites(){ return sprites; }
+	protected float getX(){ return x; }
+	protected float getY(){ return y; }
+	protected float getWidth(){ return width; }
+	protected float getHeight(){ return height; }
+	protected float getAngle(){ return angle; }
 	
-	public Texture getTexture(){ return texture; }
-	public float getX(){ return x; }
-	public float getY(){ return y; }
-	public float getWidth(){ return width; }
-	public float getHeight(){ return height; }
+	protected void setX(float x){ this.x = x; }
+	protected void setY(float y){ this.y = y; }
+	protected void setWidth(float w) { this.width = w; }
+	protected void setHeight(float h) { this.height = h; }
+	protected void setAngle(float angle) { this.angle = angle; }
+	protected void setSprites(Sprite[] s) { this.sprites = s; }
+	protected void setSprite(Sprite s) { this.sprites = new Sprite[]{ s }; }
+	
+	protected Obstacle(){
+		width = 1;
+		height = 1;
+		angle = 0;
+	}
 		
 	
 	@Override
@@ -29,8 +44,14 @@ public class Obstacle implements IUpdatable, Disposable, ICollisionable {
 	}
 
 	@Override
-	public void dispose() {
-		texture.dispose();
+	public void dispose() {		
+		if(sprites != null){			
+			for(int i=0; i<sprites.length; i++){			
+				if(sprites[i] != null){
+					sprites[i].getTexture().dispose();
+				}
+			}			
+		}
 	}
 
 	@Override
