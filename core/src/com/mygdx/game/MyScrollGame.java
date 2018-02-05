@@ -8,9 +8,7 @@ import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 public class MyScrollGame extends ApplicationAdapter {
@@ -18,7 +16,9 @@ public class MyScrollGame extends ApplicationAdapter {
 	enum State {
 		PLAYING,
 		STOPPED,
-		DYING
+		DYING,
+		FADEOUT,
+		FADEIN
 	};
 	
 	
@@ -28,6 +28,12 @@ public class MyScrollGame extends ApplicationAdapter {
 	Cursor cursor;
 	Ship ship;
 	State state;
+	Texture jiggy, jiggyWhite;
+	ShapeRenderer shapes;
+	
+	float fadeRadius = 0;
+	
+	final float MAX_RADIUS = 480;
 	
 	float shipWidth = 60;
 	float shipHeight = 40;
@@ -51,10 +57,13 @@ public class MyScrollGame extends ApplicationAdapter {
 
 	@Override
 	public void create() {
+		shapes = new ShapeRenderer();
 		shapeRenderer = new ShapeRenderer();
 		batch = new SpriteBatch();
 		shipTexture = new Texture("ship.png");		
 		tile = new Texture("map-tile.jpg");
+		jiggy = new Texture("puzzle_piece.png");
+		jiggyWhite = new Texture("puzzle_piece2.png");
 		cursor = Gdx.graphics.newCursor(new Pixmap(Gdx.files.internal("cursor.png")), 3, 3);
 		Gdx.graphics.setCursor(cursor);
 
@@ -71,12 +80,16 @@ public class MyScrollGame extends ApplicationAdapter {
 		
 		weathers.add(new Snow(60, 700, 530, 5));
 		
-		obstacles.add(new MovingBlock(2, 3, 8, 3));
+		obstacles.add(new MovingBlock(5, 3, 13, 3));
 		obstacles.add(new MovingBlock(20, 18, 25, 18));
+		
+		obstacles.add(new MovingBlock(30, 27, 30, 28));
+		obstacles.add(new MovingBlock(33, 28, 33, 27));
 		
 		explosion = new Explosion();
 		
 		initialize();
+		state = State.STOPPED;
 		
 	}
 	
@@ -84,7 +97,6 @@ public class MyScrollGame extends ApplicationAdapter {
 		ship.initialize();
 		level.initialize();
 		explosion.initialize();
-		state = State.STOPPED;		
 	}
 	
 	
@@ -106,25 +118,43 @@ public class MyScrollGame extends ApplicationAdapter {
 			}
 			
 			if(checkCollision()){
-				Gdx.gl.glClearColor(1, 0, 0, 1);
 				state = State.DYING;
+				explosion.x = ship.x;
+				explosion.y = ship.y;
 			}
 			
 			break;
 			
 		case DYING:
-			
-			explosion.x = ship.x;
-			explosion.y = ship.y;
-			
+
 			explosion.incrementElapsed(Gdx.graphics.getDeltaTime());
 			
 			if(explosion.animation.isAnimationFinished(explosion.elapsed)){
-				initialize();
-				state = State.STOPPED;				
+				fadeRadius = MAX_RADIUS;
+				state = State.FADEOUT;
 			}
 			
-			break;			
+			break;
+			
+		case FADEOUT:
+			fadeRadius -= 10;
+			
+			if(fadeRadius <= 0){
+				initialize();
+				state = State.FADEIN;
+			}
+			break;
+			
+		case FADEIN:
+			
+			fadeRadius += 10;
+			if(fadeRadius >= MAX_RADIUS){
+				fadeRadius = MAX_RADIUS;
+				initialize();
+				state = State.STOPPED;
+			}
+			
+			break;
 			
 		}		
 		
@@ -167,14 +197,43 @@ public class MyScrollGame extends ApplicationAdapter {
 	}
 	
 
+	
 	@Override
 	public void render () {
-		update();			
-
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		batch.begin();
 		
-		int fromY = -(int) level.shiftY;		
+		update();
+		
+		switch(state){
+		case FADEIN:
+		case FADEOUT:
+			
+			Gdx.gl.glClearDepthf(1.0f);
+		    Gdx.gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
+		    Gdx.gl.glColorMask(false, false, false, false);
+		    Gdx.gl.glDepthFunc(GL20.GL_LESS);
+		    Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
+		    Gdx.gl.glDepthMask(true);
+		    
+		    shapes.begin(ShapeRenderer.ShapeType.Filled);
+		    shapes.setColor(1f, 1f, 1f, 0.5f);
+		    shapes.circle(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2, fadeRadius);
+		    shapes.end();
+
+		    Gdx.gl.glColorMask(true, true, true, true);
+		    Gdx.gl.glDepthMask(true);
+		    Gdx.gl.glDepthFunc(GL20.GL_EQUAL);
+			
+			break;
+		default:
+			break;
+		}	
+		
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+	    
+	    batch.begin();  
+	    
+	    
+	    int fromY = -(int) level.shiftY;		
 		int fromX = -(int) level.shiftX;		
 	
 		for(int i=fromY; i<fromY+15 && i<level.mapRows; i++){
@@ -189,16 +248,19 @@ public class MyScrollGame extends ApplicationAdapter {
 			batch.draw(o.getTexture(), (o.getX() + level.shiftX) * tileSize, Gdx.graphics.getHeight()-(o.getY() + level.shiftY + 1) * tileSize, tileSize * o.getWidth(), tileSize * o.getHeight());
 		}
 		
-		batch.draw(shipTexture, ship.x - (shipWidth/2), ship.y - (shipHeight/2), shipWidth, shipHeight);
-		
 		
 		switch(state){
+		
+		case FADEIN:
 		case STOPPED:
-			break;
 		case PLAYING:
+			batch.draw(shipTexture, ship.x - (shipWidth/2), ship.y - (shipHeight/2), shipWidth, shipHeight);
 			break;
+		
 		case DYING:
 			batch.draw(explosion.animation.getKeyFrame(explosion.elapsed), explosion.x - 60, explosion.y - 60, 120, 120);			
+			break;
+		default:
 			break;
 		}		
 		
@@ -206,9 +268,11 @@ public class MyScrollGame extends ApplicationAdapter {
 		for(int i=0; i<weathers.size(); i++){
 			weathers.get(i).render(batch);
 		}
-		
-		batch.end();
-		
+	    
+
+	    batch.end();
+	    Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);	
+
 	}
 	
 	@Override
