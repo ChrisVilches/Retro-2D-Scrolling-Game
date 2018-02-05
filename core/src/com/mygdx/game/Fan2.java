@@ -16,9 +16,6 @@ public class Fan2 extends Obstacle {
 		
 		this.speed = speed;
 		
-		this.speed = 2;
-
-		
 		Texture texture = new Texture("dot-blue.png");
 		
 		Sprite[] sprites = new Sprite[]{
@@ -33,39 +30,27 @@ public class Fan2 extends Obstacle {
 			sprites[i].setOrigin(propellerWidth/2, propellerLength);
 			sprites[i].rotate(90 * i);
 			sprites[i].setSize(propellerWidth, propellerLength);
-			sprites[i].setAlpha(0.4f);
 		}
 
 		
-		setSprites(new Sprite[]{ sprites[0], sprites[1], sprites[2], sprites[3] });
-		
+		setSprites(new Sprite[]{ sprites[0], sprites[1], sprites[2], sprites[3] });		
 		
 		propellers = new Polygon[4];
 		for(int i=0; i<4; i++){
 			propellers[i] = new Polygon();
-			
-			//propellers[i].setOrigin(getSprites()[i].getOriginX(), getSprites()[i].getOriginY());
 			propellers[i].setOrigin(getSprites()[i].getX(), getSprites()[i].getY()+1);
 		}
-		
-		System.out.printf("%f %f\n", propellers[0].getOriginX(), propellers[0].getOriginY());
-		
 
 		float[] vertices = new float[] { 
-				getSprites()[0].getX()  - propellerWidth/2, getSprites()[0].getY(), 
-				getSprites()[0].getX()  - propellerWidth/2, getSprites()[0].getY() + propellerLength, 
-				getSprites()[0].getX()  + propellerWidth/2, getSprites()[0].getY() + propellerLength, 
-				getSprites()[0].getX()  + propellerWidth/2, getSprites()[0].getY()};
+				getSprites()[0].getX() - propellerWidth/2, getSprites()[0].getY() + 1, 
+				getSprites()[0].getX() - propellerWidth/2, getSprites()[0].getY() + 1 + propellerLength, 
+				getSprites()[0].getX() + propellerWidth/2, getSprites()[0].getY() + 1 + propellerLength, 
+				getSprites()[0].getX() + propellerWidth/2, getSprites()[0].getY() + 1 };
 
-		for(int i=1; i<vertices.length; i+=2)
-			vertices[i] += 1;
-		
-		
-		propellers[0].setVertices(vertices);
-		propellers[1].setVertices(vertices);
-		propellers[2].setVertices(vertices);
-		propellers[3].setVertices(vertices);
-		
+		for(int i=0; i<4; i++){
+			propellers[i].setVertices(vertices);
+		}
+	
 		
 	}
 	
@@ -104,18 +89,16 @@ public class Fan2 extends Obstacle {
 		Sprite s;
 		
 		for(int i=0; i<4; i++){
+			s = getSprites()[i];			
+			float newRot = s.getRotation() - speed;			
+			s.setRotation(newRot);
+			propellers[i].setRotation(-newRot);
+		}		
+		
+		for(int i=0; i<4; i++){
 			s = getSprites()[i];
-			s.setRotation(s.getRotation() - speed);
 			if(s.getRotation() <= -360) s.setRotation(360f);			
 		}
-		
-		s = getSprites()[0];
-		
-		propellers[0].setRotation(-s.getRotation());
-		propellers[1].setRotation(-s.getRotation() + 90);
-		propellers[2].setRotation(-s.getRotation() + 180);
-		propellers[3].setRotation(-s.getRotation() + 270);				
-
 	}
 	
 

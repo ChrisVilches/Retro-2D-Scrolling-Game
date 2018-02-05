@@ -88,9 +88,11 @@ public class MyScrollGame extends ApplicationAdapter {
 		obstacles.add(new Fan(9, 6, 2, -1.2f));
 		obstacles.add(new Fan(20, 19, 3, 0.7f));*/
 		
-		obstacles.add(new Fan2(6, 5, 2, 1f, 0.4f));
+		obstacles.add(new Fan2(6, 5, 4, 0.3f, 0.4f));
 		obstacles.add(new Fan2(9, 6, 2, 0.6f, -1.2f));
-		obstacles.add(new Fan2(20, 19, 3, 0.1f, 0.7f));
+		obstacles.add(new Fan2(13, 5, 1.5f, 0.6f, -1.2f));
+		obstacles.add(new Fan2(18, 4, 2, 1.6f, -1.2f));
+		obstacles.add(new Fan2(20, 21, 3, 0.1f, 0.7f));
 
 		explosion = new Explosion();
 		
@@ -119,7 +121,7 @@ public class MyScrollGame extends ApplicationAdapter {
 			if(Gdx.input.justTouched()){				
 				if(Util.pointInsideRectangle(ship.x - (shipWidth/2), Gdx.graphics.getHeight() - ship.y - (shipHeight/2), shipWidth, shipHeight, mx, my)){
 					state = State.PLAYING;
-					//level.moving = true;
+					level.moving = true;
 					ship.moving = true;
 				}				
 			}			
@@ -231,16 +233,8 @@ public class MyScrollGame extends ApplicationAdapter {
 				
 				Sprite s = sprites[j];
 				
-				//s.setSize(o.getWidth() * tileSize, o.getHeight() * tileSize);
-				//s.setRotation(o.getAngle());
-				
 				float x = s.getX();
-				float y = s.getY();
-				
-				//float ox = s.getOriginX();
-				//float oy = s.getOriginY();
-				
-				//s.setOrigin(0, 0);			
+				float y = s.getY();	
 				
 				s.setScale(tileSize);
 				s.setPosition(
@@ -249,10 +243,7 @@ public class MyScrollGame extends ApplicationAdapter {
 						);
 				
 				s.draw(batch);
-				
-				
 				s.setPosition(x, y);
-				//s.setOrigin(ox, oy);	
 				
 			}
 		}
@@ -336,7 +327,7 @@ public class MyScrollGame extends ApplicationAdapter {
 	    
 	    /****************** DEBUG ****************************/
 	    
-	    shapes.begin(ShapeRenderer.ShapeType.Line);
+	    /*shapes.begin(ShapeRenderer.ShapeType.Line);
 	    shapes.setColor(1f, 0f, 0f, 1f);
 	    float t = tileSize;
 	    Fan fan = null;
@@ -363,7 +354,7 @@ public class MyScrollGame extends ApplicationAdapter {
 	    	    	shapes.line(v[6] * t, Gdx.graphics.getHeight() - v[7] * t, v[0] * t, Gdx.graphics.getHeight() - v[1] * t);
 	    	    }
 	    	}
-	    }	    
+	    }*/    
 	    
 	    
 	    shapes.end();
