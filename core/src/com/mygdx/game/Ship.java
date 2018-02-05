@@ -2,14 +2,14 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.Gdx;
 
-public class Ship implements IUpdatable {
+public class Ship extends Weather {
 	
 	float x, y;
 	
 	boolean moving = false;
 	
-	float collisionPorcentageWidth = 0.8f;
-	float collisionPorcentageHeight = 0.8f;
+	float collisionPorcentageWidth = 1f;
+	float collisionPorcentageHeight = 1f;
 	
 	public Ship(float absoluteX, float absoluteY){
 		

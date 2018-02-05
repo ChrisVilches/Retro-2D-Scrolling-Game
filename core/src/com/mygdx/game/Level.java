@@ -1,6 +1,5 @@
 package com.mygdx.game;
 
-import java.io.BufferedReader;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
@@ -32,7 +31,7 @@ class Direction {
 	}
 }
 
-public class Level implements IUpdatable {
+public class Level implements IUpdatable, ICollisionable {
 		
 	int[][] walls;
 	int startX;
@@ -51,7 +50,7 @@ public class Level implements IUpdatable {
 	float currentDirectionShift = 0;	
 	
 	@Override
-	public void update(){		
+	public void update(){
 		if(moving){
 			changeDirection();
 			move();
@@ -81,25 +80,6 @@ public class Level implements IUpdatable {
 		case RIGHT: shiftX -= speed; break;	
 		}
 		
-	}
-	
-	
-	public boolean collision(float leftUpperX, float leftUpperY, float width, float height){
-		
-		int a = (int) leftUpperX;
-		int b = (int) leftUpperY;
-		int c = (int) (leftUpperX + width);
-		int d = (int) (leftUpperY + height);
-		
-		for(int i=b; i<=d; i++){
-			for(int j=a; j<=c; j++){
-				if(walls[i][j] == 1){
-					return true;
-				}
-			}
-		}
-	
-		return false;
 	}
 	
 	
@@ -167,6 +147,24 @@ public class Level implements IUpdatable {
 		setWallMatrix(lines);
 
 
+	}
+
+	@Override
+	public boolean touches(float leftUpperX, float leftUpperY, float width, float height) {
+		int a = (int) leftUpperX;
+		int b = (int) leftUpperY;
+		int c = (int) (leftUpperX + width);
+		int d = (int) (leftUpperY + height);
+		
+		for(int i=b; i<=d; i++){
+			for(int j=a; j<=c; j++){
+				if(walls[i][j] == 1){
+					return true;
+				}
+			}
+		}
+	
+		return false;
 	}
 
 }
