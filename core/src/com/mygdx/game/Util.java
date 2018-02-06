@@ -12,7 +12,7 @@ public class Util {
 	
 	public static boolean pointInsideRectangle(float x1, float y1, float width, float height, float x2, float y2){		
 		if(x2 < x1) return false;
-		if(x1 + width < x2) return false;		
+		if(x1 + width < x2) return false;
 		if(y2 < y1) return false;
 		if(y1 + height < y2) return false;		
 		return true;		

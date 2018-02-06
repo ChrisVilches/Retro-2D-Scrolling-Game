@@ -5,28 +5,13 @@ import com.badlogic.gdx.utils.Disposable;
 
 public abstract class Obstacle implements IUpdatable, Disposable, ICollisionable {
 
-	//private float x, y, width, height, angle;
-	private Sprite[] sprites;
-		
+	private Sprite[] sprites;		
 	protected Sprite[] getSprites(){ return sprites; }
-	/*protected float getX(){ return x; }
-	protected float getY(){ return y; }
-	protected float getWidth(){ return width; }
-	protected float getHeight(){ return height; }
-	protected float getAngle(){ return angle; }*/
-	
-	/*protected void setX(float x){ this.x = x; }
-	protected void setY(float y){ this.y = y; }
-	protected void setWidth(float w) { this.width = w; }
-	protected void setHeight(float h) { this.height = h; }
-	protected void setAngle(float angle) { this.angle = angle; }*/
 	protected void setSprites(Sprite[] s) { this.sprites = s; }
 	protected void setSprite(Sprite s) { this.sprites = new Sprite[]{ s }; }
 	
 	protected Obstacle(){
-		/*width = 1;
-		height = 1;
-		angle = 0;*/
+
 	}
 		
 	

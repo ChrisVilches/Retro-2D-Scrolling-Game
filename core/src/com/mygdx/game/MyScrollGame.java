@@ -6,11 +6,11 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Polygon;
 
 public class MyScrollGame extends ApplicationAdapter {
 	
@@ -53,6 +53,8 @@ public class MyScrollGame extends ApplicationAdapter {
 	Explosion explosion;
 	
 	Transition transition;
+	
+	ArrayList<IDebuggable> debuggables;
 
 
 	@Override
@@ -74,20 +76,24 @@ public class MyScrollGame extends ApplicationAdapter {
 		obstacles = new ArrayList<Obstacle>();
 		collisionables = new ArrayList<ICollisionable>();
 		
+		debuggables = new ArrayList<IDebuggable>();
+		
 		updatables.add(level);
 		updatables.add(ship);
 		
 		weathers.add(new Snow(60, 700, 530, 5));
 		
-		obstacles.add(new MovingBlock(5, 3, 6, 3));
+		obstacles.add(new MovingBlock(5, 2, 6, 2));
+		obstacles.add(new MovingBlock(7, 7, 8, 8));
+		obstacles.add(new MovingBlock(7, 4, 4, 8));
 		obstacles.add(new MovingBlock(20, 18, 25, 18));
 		
 		obstacles.add(new MovingBlock(30, 27, 30, 28));
-		obstacles.add(new MovingBlock(33, 28, 33, 27));
-		obstacles.add(new MovingBlock(34, 27, 34, 28));
-		obstacles.add(new MovingBlock(35, 28, 35, 27));
-		obstacles.add(new MovingBlock(36, 27, 36, 28));
-		obstacles.add(new MovingBlock(37, 28, 37, 27));
+		obstacles.add(new MovingBlock(33, 29, 33, 26));
+		obstacles.add(new MovingBlock(34, 26, 34, 29));
+		obstacles.add(new MovingBlock(35, 29, 35, 26));
+		obstacles.add(new MovingBlock(36, 26, 36, 29));
+		obstacles.add(new MovingBlock(37, 29, 37, 26));
 		
 		obstacles.add(new MovingBlock(4, 4, 4, 5));
 		
@@ -100,16 +106,21 @@ public class MyScrollGame extends ApplicationAdapter {
 		obstacles.add(new Fan2(13, 3, 5f, 0.2f, -1.2f));
 		obstacles.add(new Fan2(14, 5, 5, 0.2f, -0.9f));
 		obstacles.add(new Fan2(19, 5, 5, 0.2f, -0.9f));
-		obstacles.add(new Fan2(5, 19, 3, 0.1f, 0.7f));
-		
+		obstacles.add(new Fan2(5, 19, 3, 0.1f, 0.7f));		
 		obstacles.add(new Fan2(15, 18, 3, 0.1f, 0.7f));
-		obstacles.add(new Fan2(17, 18, 4, 0.1f, -0.9f));
+		obstacles.add(new Fan2(19, 19, 4, 0.1f, -0.9f));
 		
 		
 		collisionables.add(level);
 		
 		for(Obstacle o : obstacles){
 			collisionables.add(o);
+		}
+		
+		for(Obstacle o : obstacles){
+			if(o instanceof IDebuggable){
+				debuggables.add((IDebuggable) o);
+			}
 		}
 
 		explosion = new Explosion();
@@ -350,43 +361,37 @@ public class MyScrollGame extends ApplicationAdapter {
 
 	}
 	
-	public void debug(){
-		
-		/****************** DEBUG ****************************/
-		
+	public void debug(){		
+	
 	    shapes.begin(ShapeRenderer.ShapeType.Line);
-	    shapes.setColor(1f, 0f, 0f, 1f);
+	    
 	    float t = tileSize;
-	    Fan fan = null;
-	    for(Obstacle o : obstacles){
-	    	if(o instanceof Fan){
-	    		fan = (Fan)o;
-	    		for(int i=0; i<4; i++){	    	    	
-	    	    	float[] v = fan.getPropellers()[i].getTransformedVertices();	    	    	
-	    	    	shapes.line(v[0] * t, Gdx.graphics.getHeight() - v[1] * t, v[2] * t, Gdx.graphics.getHeight() - v[3] * t);
-	    	    	shapes.line(v[2] * t, Gdx.graphics.getHeight() - v[3] * t, v[4] * t, Gdx.graphics.getHeight() - v[5] * t);
-	    	    	shapes.line(v[4] * t, Gdx.graphics.getHeight() - v[5] * t, v[6] * t, Gdx.graphics.getHeight() - v[7] * t);
-	    	    	shapes.line(v[6] * t, Gdx.graphics.getHeight() - v[7] * t, v[0] * t, Gdx.graphics.getHeight() - v[1] * t);
-	    	    }
-	    	}
+	    
+	    for(IDebuggable d : debuggables){
 	    	
-	    	if(o instanceof Fan2){
+	    	shapes.setColor(1f, 0, 0, 1f);
+	    	
+	    	Polygon[] polygons = d.getDebugPolygons();
+	    	
+	    	for(int p=0; p<polygons.length; p++){	  
 	    		
-	    		Fan2 fan2 = (Fan2)o;
-	    		for(int i=0; i<4; i++){	    	    	
-	    	    	float[] v = fan2.getPropellers()[i].getTransformedVertices();
-	    	    	
-	    	    	for(int x=0; x<4; x++){	    	    		
-	    	    		shapes.line(
-	    	    				(v[x*2] + level.shiftX) * t, 
-	    	    				Gdx.graphics.getHeight() - (v[(x*2)+1] + level.shiftY) * t, 
-	    	    				(v[((x*2) + 2)%8] + level.shiftX) * t, 
-	    	    				Gdx.graphics.getHeight() - (v[((x*2) + 3)%8] + level.shiftY) * t
-	    	    				);
-	    	    	}	    	    	
-	    		}
+	    		float[] vertices = polygons[p].getTransformedVertices();
+	    		
+	    		for(int v=0; v<vertices.length/2; v++){	    			
+	    			
+	    			float x1 = vertices[v*2];
+	    			float y1 = vertices[(v*2)+1];
+	    			float x2 = vertices[((v*2) + 2) % vertices.length];
+	    			float y2 = vertices[((v*2) + 3) % vertices.length];
+	    			
+	    			shapes.line(
+		    				(x1 + level.shiftX) * t, Gdx.graphics.getHeight() - (y1 + level.shiftY) * t, 
+		    				(x2 + level.shiftX) * t, Gdx.graphics.getHeight() - (y2 + level.shiftY) * t
+		    				);    			
+
+	    		}	    		
 	    	}
-	    }  
+	    }    
 
 	    shapes.end();
 	}

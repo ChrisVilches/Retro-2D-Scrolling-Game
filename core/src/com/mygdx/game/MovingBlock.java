@@ -28,8 +28,6 @@ public class MovingBlock extends Obstacle {
 		
 		setSprite(s);
 		
-		
-		
 	}
 	
 
@@ -45,7 +43,5 @@ public class MovingBlock extends Obstacle {
 			state = !state;
 		}		
 	}
-	
-	
 	
 }

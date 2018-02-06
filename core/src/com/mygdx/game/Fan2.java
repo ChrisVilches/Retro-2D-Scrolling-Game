@@ -5,11 +5,16 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Polygon;
 
-public class Fan2 extends Obstacle {	
+public class Fan2 extends Obstacle implements IDebuggable {	
 	
 	private float speed;
 	
-	Polygon[] propellers;
+	private Polygon[] propellers;
+	
+	private float collisionAreaUpperLeftX;
+	private float collisionAreaUpperLeftY;
+	private float collisionAreaWidth;
+	private float collisionAreaHeight;
 	
 	
 	public Fan2(int centerX, int centerY, float propellerLength, float propellerWidth, float speed){
@@ -50,12 +55,47 @@ public class Fan2 extends Obstacle {
 		for(int i=0; i<4; i++){
 			propellers[i].setVertices(vertices);
 		}
-	
 		
+		
+		setCollisionAreaSquare();
+
+	}
+	
+	
+	private void setCollisionAreaSquare(){
+		
+		update(); // Required so that the propellers are rotated at least once.
+		
+		float minX = 1000000000, maxX = -1000000000, minY = 1000000000, maxY = -1000000000;
+		
+		for(int i=0; i<4; i++){
+			
+			float[] v = propellers[i].getTransformedVertices();
+			
+			for(int j=0; j<4; j++){
+				minX = Math.min(minX, v[j*2]);
+				maxX = Math.max(maxX, v[j*2]);
+				minY = Math.min(minY, v[j*2 + 1]);
+				maxY = Math.max(maxY, v[j*2 + 1]);
+			}
+		}
+		
+		collisionAreaUpperLeftX = minX;
+		collisionAreaUpperLeftY = minY;
+		collisionAreaWidth = maxX - minX;
+		collisionAreaHeight = maxY - minY;		
 	}
 	
 	@Override
 	public boolean touches(float leftUpperX, float leftUpperY, float width, float height) {
+		
+		if(!Util.rectangleCollision(
+				leftUpperX, leftUpperY, 
+				width, height, 
+				collisionAreaUpperLeftX, collisionAreaUpperLeftY, 
+				collisionAreaWidth, collisionAreaHeight)){
+			return false;
+		}
 		
 		for(int i=0; i<4; i++){
 			if(rectangleIntersectionRotated(propellers[i], leftUpperX, leftUpperY, width, height)){ 
@@ -66,9 +106,6 @@ public class Fan2 extends Obstacle {
 		return false;
 	}
 	
-	public Polygon[] getPropellers(){
-		return propellers;
-	}
 	
 	private boolean rectangleIntersectionRotated(Polygon p, float leftUpperX, float leftUpperY, float width, float height) {
 	    
@@ -80,6 +117,30 @@ public class Fan2 extends Obstacle {
 	    
 	    return Intersector.overlapConvexPolygons(rPoly, p);
 	
+	}
+	
+	
+	Polygon square = null;
+	
+	@Override
+	public Polygon[] getDebugPolygons(){
+		
+		Polygon[] polys = new Polygon[propellers.length + 1];
+		
+		polys[0] = new Polygon();
+		
+		polys[0].setVertices(new float[]{
+				collisionAreaUpperLeftX, collisionAreaUpperLeftY,
+				collisionAreaUpperLeftX, collisionAreaUpperLeftY + collisionAreaHeight,
+				collisionAreaUpperLeftX + collisionAreaWidth, collisionAreaUpperLeftY + collisionAreaHeight,
+				collisionAreaUpperLeftX + collisionAreaWidth, collisionAreaUpperLeftY
+		});
+		
+		for(int i=0; i<4; i++){
+			polys[i+1] = propellers[i];
+		}
+				
+		return polys;
 	}
 	
 	
