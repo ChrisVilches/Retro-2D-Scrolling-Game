@@ -31,8 +31,8 @@ public class MyScrollGame extends ApplicationAdapter {
 	ShapeRenderer shapes;
 		
 	
-	float shipWidth = 30;
-	float shipHeight = 20;
+	float shipWidth = 30 * 1.5f;
+	float shipHeight = 20 * 1.5f;
 	
 	float cursorSize = 20;
 	
@@ -60,10 +60,10 @@ public class MyScrollGame extends ApplicationAdapter {
 		shapes = new ShapeRenderer();
 		shapeRenderer = new ShapeRenderer();
 		batch = new SpriteBatch();
-		shipTexture = new Texture("ship.png");		
+		shipTexture = new Texture("ship-red.png");		
 		tile = new Texture("map-tile.jpg");
-		cursor = Gdx.graphics.newCursor(new Pixmap(Gdx.files.internal("cursor.png")), 3, 3);
-		Gdx.graphics.setCursor(cursor);
+		//cursor = Gdx.graphics.newCursor(new Pixmap(Gdx.files.internal("cursor.png")), 3, 3);
+		//Gdx.graphics.setCursor(cursor);
 
 		level = new Level("level1.txt");
 		
@@ -314,8 +314,9 @@ public class MyScrollGame extends ApplicationAdapter {
 		
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 	    
-	    batch.begin();	    
-	    
+	    batch.begin();
+	       
+    
 	    renderTiles();
 
 		renderObstacles();
@@ -325,6 +326,7 @@ public class MyScrollGame extends ApplicationAdapter {
 		case FADEIN:
 		case STOPPED:
 		case PLAYING:
+			
 			batch.draw(shipTexture, ship.x - (shipWidth/2), ship.y - (shipHeight/2), shipWidth, shipHeight);
 			break;
 		
