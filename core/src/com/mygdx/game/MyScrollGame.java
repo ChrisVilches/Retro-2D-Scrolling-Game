@@ -31,8 +31,8 @@ public class MyScrollGame extends ApplicationAdapter {
 	ShapeRenderer shapes;
 		
 	
-	float shipWidth = 30;//60;
-	float shipHeight = 20;//40;
+	float shipWidth = 30;
+	float shipHeight = 20;
 	
 	float cursorSize = 20;
 	
@@ -47,6 +47,8 @@ public class MyScrollGame extends ApplicationAdapter {
 	ArrayList<Weather> weathers;
 	
 	ArrayList<Obstacle> obstacles;
+	
+	ArrayList<ICollisionable> collisionables;
 	
 	Explosion explosion;
 	
@@ -70,6 +72,7 @@ public class MyScrollGame extends ApplicationAdapter {
 		updatables = new ArrayList<IUpdatable>();
 		weathers = new ArrayList<Weather>();
 		obstacles = new ArrayList<Obstacle>();
+		collisionables = new ArrayList<ICollisionable>();
 		
 		updatables.add(level);
 		updatables.add(ship);
@@ -81,6 +84,10 @@ public class MyScrollGame extends ApplicationAdapter {
 		
 		obstacles.add(new MovingBlock(30, 27, 30, 28));
 		obstacles.add(new MovingBlock(33, 28, 33, 27));
+		obstacles.add(new MovingBlock(34, 27, 34, 28));
+		obstacles.add(new MovingBlock(35, 28, 35, 27));
+		obstacles.add(new MovingBlock(36, 27, 36, 28));
+		obstacles.add(new MovingBlock(37, 28, 37, 27));
 		
 		obstacles.add(new MovingBlock(4, 4, 4, 5));
 		
@@ -88,15 +95,26 @@ public class MyScrollGame extends ApplicationAdapter {
 		obstacles.add(new Fan(9, 6, 2, -1.2f));
 		obstacles.add(new Fan(20, 19, 3, 0.7f));*/
 		
-		obstacles.add(new Fan2(6, 5, 4, 0.3f, 0.4f));
-		obstacles.add(new Fan2(9, 6, 2, 0.6f, -1.2f));
-		obstacles.add(new Fan2(13, 5, 1.5f, 0.6f, -1.2f));
-		obstacles.add(new Fan2(18, 4, 2, 1.6f, -1.2f));
-		obstacles.add(new Fan2(20, 21, 3, 0.1f, 0.7f));
+		obstacles.add(new Fan2(5, 5, 4, 0.3f, 0.4f));
+		obstacles.add(new Fan2(8, 8, 2, 0.6f, -1.2f));
+		obstacles.add(new Fan2(13, 3, 5f, 0.2f, -1.2f));
+		obstacles.add(new Fan2(14, 5, 5, 0.2f, -0.9f));
+		obstacles.add(new Fan2(19, 5, 5, 0.2f, -0.9f));
+		obstacles.add(new Fan2(5, 19, 3, 0.1f, 0.7f));
+		
+		obstacles.add(new Fan2(15, 18, 3, 0.1f, 0.7f));
+		obstacles.add(new Fan2(17, 18, 4, 0.1f, -0.9f));
+		
+		
+		collisionables.add(level);
+		
+		for(Obstacle o : obstacles){
+			collisionables.add(o);
+		}
 
 		explosion = new Explosion();
 		
-		transition = new BarsTransition();
+		transition = new CircleTransition();
 		
 		initialize();
 		state = State.STOPPED;
@@ -185,6 +203,8 @@ public class MyScrollGame extends ApplicationAdapter {
 	
 	private boolean checkCollision(){
 		
+		// Suboptimal, most of these calculations are constant (no need to do them every frame)
+		
 		float x = (ship.x / tileSize) - level.shiftX;
 		float y = ((Gdx.graphics.getHeight()-ship.y) / tileSize) - level.shiftY;
 		
@@ -200,13 +220,13 @@ public class MyScrollGame extends ApplicationAdapter {
 		float width = (shipWidth/tileSize) - (collisionBoxRemovalWidth*2);
 		float height = (shipHeight/tileSize) - (collisionBoxRemovalHeight*2);
 		
-		for(int i=0; i<obstacles.size(); i++){
-			if(obstacles.get(i).touches(x, y, width, height)){
+		for(int i=0; i<collisionables.size(); i++){
+			if(collisionables.get(i).touches(x, y, width, height)){
 				return true;
 			}
 		}
 			
-		return level.touches(x, y, width, height);
+		return false;
 	}
 	
 	
@@ -276,6 +296,13 @@ public class MyScrollGame extends ApplicationAdapter {
 			break;
 		}	
 	}
+	
+	private void renderWeather(){
+		for(int i=0; i<weathers.size(); i++){
+			weathers.get(i).render(batch);
+			weathers.get(i).render(shapes);
+		}
+	}
 
 	
 	@Override
@@ -287,8 +314,7 @@ public class MyScrollGame extends ApplicationAdapter {
 		
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 	    
-	    batch.begin();  
-	    
+	    batch.begin();	    
 	    
 	    renderTiles();
 
@@ -309,12 +335,7 @@ public class MyScrollGame extends ApplicationAdapter {
 			break;
 		}		
 		
-		
-		for(int i=0; i<weathers.size(); i++){
-			weathers.get(i).render(batch);
-			weathers.get(i).render(shapes);
-		}
-	    
+		renderWeather();	    
 
 	    batch.end();
 	    Gdx.gl.glDisable(GL20.GL_DEPTH_TEST);
@@ -322,12 +343,16 @@ public class MyScrollGame extends ApplicationAdapter {
 	    
 	    
 	    
+	    //debug();
 	    
-	    
-	    
-	    /****************** DEBUG ****************************/
-	    
-	    /*shapes.begin(ShapeRenderer.ShapeType.Line);
+
+	}
+	
+	public void debug(){
+		
+		/****************** DEBUG ****************************/
+		
+	    shapes.begin(ShapeRenderer.ShapeType.Line);
 	    shapes.setColor(1f, 0f, 0f, 1f);
 	    float t = tileSize;
 	    Fan fan = null;
@@ -347,22 +372,25 @@ public class MyScrollGame extends ApplicationAdapter {
 	    		
 	    		Fan2 fan2 = (Fan2)o;
 	    		for(int i=0; i<4; i++){	    	    	
-	    	    	float[] v = fan2.getPropellers()[i].getTransformedVertices();	    	    	
-	    	    	shapes.line(v[0] * t, Gdx.graphics.getHeight() - v[1] * t, v[2] * t, Gdx.graphics.getHeight() - v[3] * t);
-	    	    	shapes.line(v[2] * t, Gdx.graphics.getHeight() - v[3] * t, v[4] * t, Gdx.graphics.getHeight() - v[5] * t);
-	    	    	shapes.line(v[4] * t, Gdx.graphics.getHeight() - v[5] * t, v[6] * t, Gdx.graphics.getHeight() - v[7] * t);
-	    	    	shapes.line(v[6] * t, Gdx.graphics.getHeight() - v[7] * t, v[0] * t, Gdx.graphics.getHeight() - v[1] * t);
-	    	    }
+	    	    	float[] v = fan2.getPropellers()[i].getTransformedVertices();
+	    	    	
+	    	    	for(int x=0; x<4; x++){	    	    		
+	    	    		shapes.line(
+	    	    				(v[x*2] + level.shiftX) * t, 
+	    	    				Gdx.graphics.getHeight() - (v[(x*2)+1] + level.shiftY) * t, 
+	    	    				(v[((x*2) + 2)%8] + level.shiftX) * t, 
+	    	    				Gdx.graphics.getHeight() - (v[((x*2) + 3)%8] + level.shiftY) * t
+	    	    				);
+	    	    	}	    	    	
+	    		}
 	    	}
-	    }*/    
-	    
-	    
+	    }  
+
 	    shapes.end();
-	    
 	}
 	
 	@Override
-	public void dispose () {
+	public void dispose() {
 		batch.dispose();
 		tile.dispose();
 		shipTexture.dispose();

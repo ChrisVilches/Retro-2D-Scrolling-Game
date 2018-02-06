@@ -41,7 +41,7 @@ public class Level implements IUpdatable, ICollisionable {
 	
 	int mapRows, mapCols;
 	
-	float speed = 0.05f;
+	float speed = 0.03f;
 	
 	float shiftX, shiftY;	
 	
