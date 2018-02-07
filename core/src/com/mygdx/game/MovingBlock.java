@@ -1,5 +1,7 @@
 package com.mygdx.game;
 
+import java.util.Map;
+
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 
@@ -10,6 +12,16 @@ public class MovingBlock extends Obstacle {
 	private boolean state = true; // forward or backwards
 	
 	private float t = 0;
+	
+	@MapConstructor
+	public MovingBlock(Map<String, Object> map){
+
+		this(Util.numberToInteger(map.get("x1")), 
+				Util.numberToInteger(map.get("y1")), 
+				Util.numberToInteger(map.get("x2")), 
+				Util.numberToInteger(map.get("y2")));
+		
+	}
 	
 	public MovingBlock(int x1, int y1, int x2, int y2){
 		

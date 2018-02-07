@@ -57,6 +57,8 @@ public class LevelMap implements IUpdatable, ICollisionable {
 	
 	private Transition transition;
 	
+	private String levelName;
+	
 	ArrayList<Direction> directions;
 	int currentDirection = 0;
 	float currentDirectionShift = 0;	
@@ -80,7 +82,7 @@ public class LevelMap implements IUpdatable, ICollisionable {
 			
 			JSONObject map = new JSONObject(jsonString);
 			
-			//String name = (String) map.get("levelName");
+			levelName = (String) map.get("levelName");
 			
 			String transitionName = (String) map.get("transition");
 			
@@ -192,6 +194,10 @@ public class LevelMap implements IUpdatable, ICollisionable {
 		case RIGHT: shiftX -= speed; break;	
 		}
 		
+	}
+	
+	public String getLevelName(){
+		return levelName;
 	}
 
 	
