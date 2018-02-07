@@ -1,16 +1,18 @@
 package com.mygdx.game;
 
 import java.util.ArrayList;
-
+import java.util.List;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.utils.Disposable;
 
 public class MyScrollGame extends ApplicationAdapter {
 	
@@ -38,23 +40,23 @@ public class MyScrollGame extends ApplicationAdapter {
 	
 	float tileSize = 50;
 	
-	Level level;
+	LevelMap level;
 	
-	ArrayList<IUpdatable> updatables;
+	List<IUpdatable> updatables;
 	
 	ShapeRenderer shapeRenderer;
 	
-	ArrayList<Weather> weathers;
+	List<Weather> weathers;
 	
-	ArrayList<Obstacle> obstacles;
+	List<Obstacle> obstacles;
 	
-	ArrayList<ICollisionable> collisionables;
+	List<ICollisionable> collisionables;
 	
 	Explosion explosion;
+
+	List<IDebuggable> debuggables;
 	
-	Transition transition;
-	
-	ArrayList<IDebuggable> debuggables;
+	List<Disposable> disposables;
 
 
 	@Override
@@ -64,72 +66,55 @@ public class MyScrollGame extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		shipTexture = new Texture("ship-red.png");		
 		tile = new Texture("map-tile.jpg");
-		//cursor = Gdx.graphics.newCursor(new Pixmap(Gdx.files.internal("cursor.png")), 3, 3);
+		cursor = Gdx.graphics.newCursor(new Pixmap(Gdx.files.internal("cursor.png")), 3, 3);
 		//Gdx.graphics.setCursor(cursor);
 
-		level = new Level("level1.txt");
+		level = new LevelMap("level1.json");
 		
 		ship = new Ship((level.startX * tileSize) - tileSize/2, Gdx.graphics.getHeight() - ((level.startY + 1) * tileSize) + tileSize/2);
+		
+		explosion = new Explosion();
 		
 		updatables = new ArrayList<IUpdatable>();
 		weathers = new ArrayList<Weather>();
 		obstacles = new ArrayList<Obstacle>();
-		collisionables = new ArrayList<ICollisionable>();
-		
-		debuggables = new ArrayList<IDebuggable>();
-		
-		updatables.add(level);
-		updatables.add(ship);
-		
-		weathers.add(new Snow(60, 700, 530, 5));
-		
-		obstacles.add(new MovingBlock(5, 2, 6, 2));
-		obstacles.add(new MovingBlock(7, 7, 8, 8));
-		obstacles.add(new MovingBlock(7, 4, 4, 8));
-		obstacles.add(new MovingBlock(20, 18, 25, 18));
-		
-		obstacles.add(new MovingBlock(30, 27, 30, 28));
-		obstacles.add(new MovingBlock(33, 29, 33, 26));
-		obstacles.add(new MovingBlock(34, 26, 34, 29));
-		obstacles.add(new MovingBlock(35, 29, 35, 26));
-		obstacles.add(new MovingBlock(36, 26, 36, 29));
-		obstacles.add(new MovingBlock(37, 29, 37, 26));
-		
-		obstacles.add(new MovingBlock(4, 4, 4, 5));
-		
-		/*obstacles.add(new Fan(6, 5, 6, 0.4f));
-		obstacles.add(new Fan(9, 6, 2, -1.2f));
-		obstacles.add(new Fan(20, 19, 3, 0.7f));*/
-		
-		obstacles.add(new Fan2(5, 5, 4, 0.3f, 0.4f));
-		obstacles.add(new Fan2(8, 8, 2, 0.6f, -1.2f));
-		obstacles.add(new Fan2(13, 3, 5f, 0.2f, -1.2f));
-		obstacles.add(new Fan2(14, 5, 5, 0.2f, -0.9f));
-		obstacles.add(new Fan2(19, 5, 5, 0.2f, -0.9f));
-		obstacles.add(new Fan2(5, 19, 3, 0.1f, 0.7f));		
-		obstacles.add(new Fan2(15, 18, 3, 0.1f, 0.7f));
-		obstacles.add(new Fan2(19, 19, 4, 0.1f, -0.9f));
-		
-		
-		collisionables.add(level);
-		
-		for(Obstacle o : obstacles){
-			collisionables.add(o);
-		}
-		
-		for(Obstacle o : obstacles){
-			if(o instanceof IDebuggable){
-				debuggables.add((IDebuggable) o);
-			}
-		}
+		collisionables = new ArrayList<ICollisionable>();		
+		disposables = new ArrayList<Disposable>();		
+		debuggables = new ArrayList<IDebuggable>();	
 
-		explosion = new Explosion();
 		
-		transition = new CircleTransition();
+		addToAppropiateList(level);
+		addToAppropiateList(ship);
+		addToAppropiateList(new Snow(60, 700, 530, 5));
+		
+		for(Object o : level.getGameObjects()){			
+			addToAppropiateList(o);
+		}		
 		
 		initialize();
 		state = State.STOPPED;
 		
+	}
+	
+	private void addToAppropiateList(Object o){
+		if(o instanceof IDebuggable){
+			debuggables.add((IDebuggable) o);
+		} 
+		if(o instanceof Disposable){
+			disposables.add((Disposable) o);
+		} 
+		if(o instanceof ICollisionable){
+			collisionables.add((ICollisionable) o);
+		} 
+		if(o instanceof IUpdatable){
+			updatables.add((IUpdatable) o);
+		} 
+		if(o instanceof Obstacle){
+			obstacles.add((Obstacle) o);
+		} 
+		if(o instanceof Weather){
+			weathers.add((Weather) o);
+		}
 	}
 	
 	public void initialize(){
@@ -146,22 +131,22 @@ public class MyScrollGame extends ApplicationAdapter {
 			
 			float mx = Gdx.input.getX();
 			float my = Gdx.input.getY();
+			
+			level.pause(true);
+			ship.pause(true);
 						
 			if(Gdx.input.justTouched()){				
 				if(Util.pointInsideRectangle(ship.x - (shipWidth/2), Gdx.graphics.getHeight() - ship.y - (shipHeight/2), shipWidth, shipHeight, mx, my)){
 					state = State.PLAYING;
-					level.moving = true;
-					ship.moving = true;
 				}				
 			}			
 			break;	
 			
 		case PLAYING:
 			
-			for(int i=0; i<updatables.size(); i++){				
-				updatables.get(i).update();
-			}
-			
+			level.pause(false);
+			ship.pause(false);
+
 			if(checkCollision()){
 				state = State.DYING;
 				explosion.x = ship.x;
@@ -171,11 +156,14 @@ public class MyScrollGame extends ApplicationAdapter {
 			break;
 			
 		case DYING:
+			
+			level.pause(true);
+			ship.pause(true);
 
 			explosion.incrementElapsed(Gdx.graphics.getDeltaTime());
 			
 			if(explosion.animation.isAnimationFinished(explosion.elapsed)){
-				transition.initialize();
+				level.getTransition().initialize();
 				state = State.FADEOUT;
 			}
 			
@@ -183,7 +171,10 @@ public class MyScrollGame extends ApplicationAdapter {
 			
 		case FADEOUT:
 			
-			if(transition.fadeOut()){
+			level.pause(true);
+			ship.pause(true);
+			
+			if(level.getTransition().fadeOut()){
 				initialize();
 				state = State.FADEIN;
 			}
@@ -191,8 +182,11 @@ public class MyScrollGame extends ApplicationAdapter {
 			
 		case FADEIN:
 			
-			if(transition.fadeIn()){
-				transition.initialize();
+			level.pause(true);
+			ship.pause(true);
+			
+			if(level.getTransition().fadeIn()){
+				level.getTransition().initialize();
 				initialize();
 				state = State.STOPPED;
 			}			
@@ -201,14 +195,11 @@ public class MyScrollGame extends ApplicationAdapter {
 		}
 		
 	
-		for(int i=0; i<obstacles.size(); i++){
-			obstacles.get(i).update();
-		}
-		
-		for(int i=0; i<weathers.size(); i++){
-			weathers.get(i).update();
-		}
-		
+		for(int i=0; i<updatables.size(); i++){			
+			IUpdatable u = updatables.get(i);			
+			if(u.isPaused()) continue;
+			u.update();
+		}	
 		
 	}
 	
@@ -295,7 +286,7 @@ public class MyScrollGame extends ApplicationAdapter {
 		    
 		    shapes.begin(ShapeRenderer.ShapeType.Filled);
 		    shapes.setColor(1f, 1f, 1f, 0.5f);
-		    transition.render(shapes);
+		    level.getTransition().render(shapes);
 		    shapes.end();
 
 		    Gdx.gl.glColorMask(true, true, true, true);
@@ -325,8 +316,7 @@ public class MyScrollGame extends ApplicationAdapter {
 		
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 	    
-	    batch.begin();
-	       
+	    batch.begin();	       
     
 	    renderTiles();
 
@@ -398,17 +388,10 @@ public class MyScrollGame extends ApplicationAdapter {
 	
 	@Override
 	public void dispose() {
-		batch.dispose();
-		tile.dispose();
-		shipTexture.dispose();
-		cursor.dispose();
 		
-		for(int i=0; i<weathers.size(); i++){
-			weathers.get(i).dispose();
+		for(int i=0; i<disposables.size(); i++){
+			disposables.get(i).dispose();
 		}
-		
-		for(int i=0; i<obstacles.size(); i++){
-			obstacles.get(i).dispose();
-		}
+
 	}
 }

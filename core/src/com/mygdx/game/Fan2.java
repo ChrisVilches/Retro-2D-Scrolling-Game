@@ -1,5 +1,7 @@
 package com.mygdx.game;
 
+import java.util.Map;
+
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Intersector;
@@ -15,6 +17,17 @@ public class Fan2 extends Obstacle implements IDebuggable {
 	private float collisionAreaUpperLeftY;
 	private float collisionAreaWidth;
 	private float collisionAreaHeight;
+	
+	@MapConstructor
+	public Fan2(Map<String, Object> map){
+
+		this((Integer)map.get("centerX"), 
+				(Integer)map.get("centerY"), 
+				Util.numberToFloat(map.get("propellerLength")), 
+				Util.numberToFloat(map.get("propellerWidth")), 
+				Util.numberToFloat(map.get("speed")));
+		
+	}
 	
 	
 	public Fan2(int centerX, int centerY, float propellerLength, float propellerWidth, float speed){
@@ -162,5 +175,14 @@ public class Fan2 extends Obstacle implements IDebuggable {
 		}
 	}
 	
+	@Override
+	public void pause(boolean b){
+		
+	}
+	
+	@Override
+	public boolean isPaused(){
+		return false;
+	}
 
 }

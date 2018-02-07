@@ -100,5 +100,15 @@ public class Snow extends Weather {
 	public void dispose(){
 		snowflakeTexture.dispose();
 	}
+	
+	@Override
+	public void pause(boolean b){
+		
+	}
+	
+	@Override
+	public boolean isPaused(){
+		return false;
+	}
 
 }

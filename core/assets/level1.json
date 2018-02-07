@@ -1,0 +1,88 @@
+{
+	"levelName": "Primera etapa",
+	"transition": "bars",
+	"directions": [
+		{
+			"arrow": "Å®",
+			"steps": 25
+		},
+		{
+			"arrow": "Å´",
+			"steps": 12
+		},
+		{
+			"arrow": "Å©",
+			"steps": 13
+		},
+		{
+			"arrow": "Å´",
+			"steps": 10
+		},
+		{
+			"arrow": "Å®",
+			"steps": 26
+		}
+	],
+	"gameObjects": [
+		{
+			"className": "com.mygdx.game.Fan2",
+			"params": {
+				"centerX": 1,
+				"centerY": 2,
+				"propellerLength": 3,
+				"propellerWidth": 0.2,
+				"speed": 0.1
+			}
+		},
+		{
+			"className": "com.mygdx.game.Fan2",
+			"params": {
+				"centerX": 5,
+				"centerY": 5,
+				"propellerLength": 1,
+				"propellerWidth": 0.2,
+				"speed": 0.3
+			}
+		}
+	],
+	"matrixRows": [
+	"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+	"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+	"x...........................xxxxxxxxxxxxxxxxxxxxxxxxxxx",
+	"x..o..............................xxxxxxxxxxxxxxxxxxxxx",
+	"x...................................xxxxxxxxxxxxxxxxxxx",
+	"x.....x............x...xxxxxxxxxx...xxxxxxxxxxxxxxxxxxx",
+	"xx.....................xxxxxxxxxx...xxxxxxxxxxxxxxxxxxx",
+	"xx...............xxxxxxxxxxxxxxxx...xxxxxxxxxxxxxxxxxxx",
+	"xxx...............xxxxxxxxx.xxxxx...xxxxxxxxxxxxxxxxxxx",
+	"xxxxxxxxxxxxxxxxxxxxxxxxxxx.xxxxx...xxxxxxxxxxxxxxxxxxx",
+	"xxxxxxxxxxxxxxxxxxxxxxxxxxx...xxx...xxxxxxxxxxxxxxxxxxx",
+	"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx...xxxxxxxxxxxxxxxxxxx",
+	"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx...xxxxxxxxxxxxxxxxxxx",
+	"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx...xxxxxxxxxxxxxxxxxxx",
+	"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx...xxxxxxxxxxxxxxxxxxx",
+	"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx...xxxxxxxxxxxxxxxxxxx",
+	"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx...xxxxxxxxxxxxxxxxxxx",
+	"xxxxxxxxxxxxx.......................xxxxxxxxxxxxxxxxxxx",
+	"xxxxxxxxxxxxx.......................xxxxxxxxxxxxxxxxxxx",
+	"xxxxxxxxxxxxx.......................xxxxxxxxxxxxxxxxxxx",
+	"xxxxxxxxxxxxx.....xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+	"xxxxxxxxxxxxx.....xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+	"xxxxxxxxxxxxx.....xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+	"xxxxxxxxxxxxx.....xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+	"xxxxxxxxxxxxx.....xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+	"xxxxxxxxxxxxx.....xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+	"xxxxxxxxxxxxx.....xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+	"xxxxxxxxxxxxx.......................................xxx",
+	"xxxxxxxxxxxxx.......................................xxx",
+	"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+	"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+	"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+	"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+	"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+	"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+	"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+	"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+	]
+	
+}

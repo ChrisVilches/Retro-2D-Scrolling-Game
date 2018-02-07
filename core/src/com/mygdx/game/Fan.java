@@ -105,5 +105,14 @@ public class Fan extends Obstacle {
 
 	}
 
-
+	@Override
+	public void pause(boolean b){
+		
+	}
+	
+	@Override
+	public boolean isPaused(){
+		return false;
+	}
+	
 }

@@ -2,6 +2,43 @@ package com.mygdx.game;
 
 public class Util {
 	
+	public static int numberToInteger(Object number){
+		if(number instanceof Double){
+			double n = (Double) number;
+			return (int) n;
+		}
+		
+		if(number instanceof Integer){
+			int n = (Integer) number;
+			return (int) n;
+		}
+		
+		if(number instanceof Float){
+			Float n = (Float) number;
+			return (int) (n/1);
+		}
+		return 0;
+	}
+
+	public static float numberToFloat(Object number){
+		
+		if(number instanceof Double){
+			double n = (Double) number;
+			return (float) n;
+		}
+		
+		if(number instanceof Integer){
+			int n = (Integer) number;
+			return (float) n;
+		}
+		
+		if(number instanceof Float){
+			Float n = (Float) number;
+			return (float) n;
+		}
+		return 0;		
+	}
+	
 	public static boolean rectangleCollision(float x1, float y1, float width1, float height1, float x2, float y2, float width2, float height2){
 		if(rectangleInsideRectangle(x1, y1, width1, height1, x2, y2, width2, height2)) return true;		
 		if(rectangleInsideRectangle(x2, y2, width2, height2, x1, y1, width1, height1)) return true;	

@@ -8,14 +8,14 @@ public class Ship implements IUpdatable {
 	
 	private float absX, absY;
 	
-	boolean moving = false;
-	
 	float collisionPorcentageWidth = 0.8f;
 	float collisionPorcentageHeight = 0.8f;
 	
+	private boolean paused = false;
+	
 	public Ship(float absoluteX, float absoluteY){		
 		absX = absoluteX;
-		absY = absoluteY;		
+		absY = absoluteY;
 	}
 	
 	public void initialize(){
@@ -26,13 +26,21 @@ public class Ship implements IUpdatable {
 	
 	public void update(){
 		
-		if(!moving) return;
-		
 		float xMouse = Gdx.input.getX();
 		float yMouse = Gdx.graphics.getHeight()-Gdx.input.getY();
 		
 		x = x - ((x - xMouse) * 0.1f);
 		y = y - ((y - yMouse) * 0.1f);		
+	}
+	
+	@Override
+	public boolean isPaused(){
+		return paused;
+	}
+	
+	@Override
+	public void pause(boolean b){
+		paused = b;
 	}
 
 }

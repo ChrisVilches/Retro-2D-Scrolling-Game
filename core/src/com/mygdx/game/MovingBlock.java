@@ -41,7 +41,17 @@ public class MovingBlock extends Obstacle {
 		
 		if(t == 100 || t == 0){
 			state = !state;
-		}		
+		}
+	}
+	
+	@Override
+	public void pause(boolean b){
+		
+	}
+	
+	@Override
+	public boolean isPaused(){
+		return false;
 	}
 	
 }
